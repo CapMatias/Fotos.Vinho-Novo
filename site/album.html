@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4A1B3A">
+<title>Álbum — Vinho Novo Saquarema</title>
+<link rel="icon" href="/logo.png">
+<!-- Adicionar à tela de início: vira aplicativo, com ícone e nome próprios.
+     O iOS arredonda o ícone sozinho; não precisa arredondar no arquivo. -->
+<link rel="apple-touch-icon" href="/icone-180.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vinho Novo">
+<meta name="application-name" content="Vinho Novo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- Telas de abertura do iPhone (uma por tamanho de aparelho): sem elas,
+     o app abre com um clarão branco antes do site. -->
+<link rel="apple-touch-startup-image" href="/splash/splash-640x1136.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2208.png"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-828x1792.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2688.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1170x2532.png"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1284x2778.png"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1179x2556.png"
+      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1290x2796.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1206x2622.png"
+      media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1320x2868.png"
+      media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <img class="hero__mark" src="/marca.png" alt="" aria-hidden="true">
+    <!-- o "?ja=1" avisa a pagina inicial que a abertura ja passou -->
+    <a class="hero__voltar" href="/?ja=1">&#8592; Todos os álbuns</a>
+    <h1 class="hero__titulo" id="titulo">Carregando...</h1>
+    <p class="hero__sub" id="subtitulo"></p>
+  </header>
+
+  <main class="conteudo">
+    <div class="painel-branco">
+
+      <div class="barra" id="ferramentas" hidden style="margin-top:0; padding-top:0; border-top:0;">
+        <span class="barra__conta" id="conta"></span>
+        <span class="barra__espaco"></span>
+        <span class="barra__conta">Toque na foto para ver grande. A setinha salva no aparelho.</span>
+      </div>
+
+      <p id="recado" class="aviso">Carregando as fotos...</p>
+      <ul id="grade" class="fotos"></ul>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    Igreja Evangélica Vinho Novo em Saquarema
+  </footer>
+</div>
+
+<!-- foto aberta em tela cheia -->
+<div class="lupa" id="lupa" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <button class="lupa__fechar" id="lupaFechar" type="button" aria-label="Fechar">&#10005;</button>
+  <button class="lupa__seta lupa__seta--esq" id="lupaAnterior" type="button" aria-label="Foto anterior">&#8249;</button>
+  <img class="lupa__img" id="lupaImg" src="" alt="">
+  <button class="lupa__seta lupa__seta--dir" id="lupaProxima" type="button" aria-label="Próxima foto">&#8250;</button>
+  <div class="lupa__barra">
+    <a class="botao botao--ouro" id="lupaBaixar" href="#" download>Baixar esta foto</a>
+    <p class="lupa__nome" id="lupaNome"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var grade = document.getElementById("grade");
+  var recado = document.getElementById("recado");
+  var titulo = document.getElementById("titulo");
+  var subtitulo = document.getElementById("subtitulo");
+  var ferramentas = document.getElementById("ferramentas");
+  var conta = document.getElementById("conta");
+
+  var lupa = document.getElementById("lupa");
+  var lupaImg = document.getElementById("lupaImg");
+  var lupaNome = document.getElementById("lupaNome");
+  var lupaBaixar = document.getElementById("lupaBaixar");
+
+  var fotos = [];
+  var album = null;
+  var abertaEm = -1;
+
+  var MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+               "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+  function porExtenso(data) {
+    var p = String(data || "").split("-");
+    if (p.length !== 3) return "";
+    return Number(p[2]) + " de " + MESES[Number(p[1]) - 1] + " de " + p[0];
+  }
+
+  function tamanhoBonito(bytes) {
+    if (!bytes) return "";
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " KB";
+    return (bytes / 1024 / 1024).toFixed(1).replace(".", ",") + " MB";
+  }
+
+  function mostrarRecado(texto, tipo) {
+    recado.textContent = texto;
+    recado.className = "aviso" + (tipo ? " aviso--" + tipo : "");
+    recado.hidden = !texto;
+  }
+
+  function qualAlbum() {
+    var daBusca = new URLSearchParams(location.search).get("slug");
+    if (daBusca) return daBusca;
+    var pedacos = location.pathname.split("/").filter(Boolean);   // ["album", "slug"]
+    return pedacos.length > 1 ? decodeURIComponent(pedacos[1]) : "";
+  }
+
+  // ------------------------------------------------------------ desenhar
+  function desenhar() {
+    grade.textContent = "";
+
+    fotos.forEach(function (f, indice) {
+      var item = document.createElement("li");
+      item.className = "foto";
+
+      var img = document.createElement("img");
+      img.className = "foto__img";
+      img.src = f.mini;
+      img.alt = f.nome;
+      img.loading = "lazy";
+      img.addEventListener("click", function () { abrirLupa(indice); });
+      item.appendChild(img);
+
+      var baixar = document.createElement("a");
+      baixar.className = "foto__acao";
+      baixar.href = f.baixar;
+      baixar.setAttribute("download", f.nome);
+      baixar.title = "Baixar " + f.nome;
+      baixar.setAttribute("aria-label", "Baixar " + f.nome);
+      baixar.innerHTML = "&#8615;";
+      item.appendChild(baixar);
+
+      grade.appendChild(item);
+    });
+  }
+
+  // -------------------------------------------------------------- lupa
+  function abrirLupa(indice) {
+    abertaEm = indice;
+    var f = fotos[indice];
+    lupaImg.src = f.grande;
+    lupaImg.alt = f.nome;
+    lupaNome.textContent = f.nome + (f.tamanho ? " • " + tamanhoBonito(f.tamanho) : "") +
+                           "  (" + (indice + 1) + " de " + fotos.length + ")";
+    lupaBaixar.href = f.baixar;
+    lupaBaixar.setAttribute("download", f.nome);
+    lupa.classList.add("aberta");
+    document.body.style.overflow = "hidden";
+  }
+
+  function fecharLupa() {
+    lupa.classList.remove("aberta");
+    lupaImg.src = "";
+    document.body.style.overflow = "";
+  }
+
+  function andar(passo) {
+    if (!fotos.length) return;
+    abrirLupa((abertaEm + passo + fotos.length) % fotos.length);
+  }
+
+  document.getElementById("lupaFechar").addEventListener("click", fecharLupa);
+  document.getElementById("lupaAnterior").addEventListener("click", function () { andar(-1); });
+  document.getElementById("lupaProxima").addEventListener("click", function () { andar(1); });
+  lupa.addEventListener("click", function (e) { if (e.target === lupa) fecharLupa(); });
+  document.addEventListener("keydown", function (e) {
+    if (!lupa.classList.contains("aberta")) return;
+    if (e.key === "Escape") fecharLupa();
+    if (e.key === "ArrowLeft") andar(-1);
+    if (e.key === "ArrowRight") andar(1);
+  });
+
+  // Avisa o painel que mais uma pessoa abriu este álbum. Só uma vez por
+  // aparelho: recarregar a página não infla o número.
+  function contarUmaVez(slug) {
+    var marca = "album-visto-" + slug;
+    try { if (localStorage.getItem(marca)) return; } catch (e) { /* bloqueado */ }
+    if (document.cookie.indexOf(marca + "=1") !== -1) return;
+
+    fetch("/api/visita", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: slug })
+    }).catch(function () { /* contador é enfeite: falhou, tudo bem */ });
+
+    try { localStorage.setItem(marca, "1"); } catch (e) { /* bloqueado */ }
+    try { document.cookie = marca + "=1; max-age=31536000; path=/; samesite=lax"; } catch (e) { /* bloqueado */ }
+  }
+
+  // ------------------------------------------------------------ começo
+  var slug = qualAlbum();
+  if (!slug) {
+    mostrarRecado("Endereço incompleto. Volte para a lista de álbuns.", "erro");
+    return;
+  }
+
+  fetch("/api/album?slug=" + encodeURIComponent(slug))
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("http " + r.status)); })
+    .then(function (dado) {
+      album = dado.album;
+      album.slug = album.slug || slug;
+      fotos = dado.fotos || [];
+
+      document.title = album.titulo + " — Fotos Vinho Novo";
+      titulo.textContent = album.titulo;
+      subtitulo.textContent = porExtenso(album.data_evento) + (album.descricao ? " • " + album.descricao : "");
+      contarUmaVez(album.slug);
+
+      if (!fotos.length) {
+        mostrarRecado("Este álbum ainda não tem fotos.", "");
+        return;
+      }
+
+      conta.textContent = fotos.length + (fotos.length === 1 ? " foto" : " fotos");
+      ferramentas.hidden = false;
+      mostrarRecado("", "");
+      desenhar();
+    })
+    .catch(function () {
+      titulo.textContent = "Álbum não encontrado";
+      mostrarRecado("Não consegui abrir este álbum. Confira o endereço ou volte para a lista.", "erro");
+    });
+})();
+</script>
+</body>
+</html>

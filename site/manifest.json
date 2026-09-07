@@ -1,0 +1,18 @@
+{
+  "name": "Fotos — Vinho Novo Saquarema",
+  "short_name": "Vinho Novo",
+  "description": "Fotos dos cultos e eventos da Igreja Evangélica Vinho Novo em Saquarema.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#642850",
+  "theme_color": "#4A1B3A",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icone-192.png",  "sizes": "192x192",   "type": "image/png" },
+    { "src": "/icone-512.png",  "sizes": "512x512",   "type": "image/png" },
+    { "src": "/icone-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "maskable" },
+    { "src": "/icone-1024.png", "sizes": "1024x1024", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,52 @@
+# Configuração do site na Netlify.
+# "publish" = a pasta que vai para o ar. Só o que está em site/ fica público:
+# o código das funções, o SQL e as instruções não são servidos para ninguém.
+
+[build]
+  publish = "site"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Deixa os endereços curtos: /api/albuns em vez de /.netlify/functions/albuns
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Cada álbum tem endereço próprio: /album/batismo-2026
+[[redirects]]
+  from = "/album/*"
+  to = "/album.html"
+  status = 200
+
+# O painel de quem publica as fotos mora em /painel/CHAVE-SECRETA
+[[redirects]]
+  from = "/painel/*"
+  to = "/painel.html"
+  status = 200
+
+[[headers]]
+  for = "/painel*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+
+# Logo, marca e o vídeo de abertura não mudam: o navegador guarda e não
+# baixa de novo. É o que impede o vídeo de pesar em toda visita.
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

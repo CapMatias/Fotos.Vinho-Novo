@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4A1B3A">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de fotos — Vinho Novo</title>
+<link rel="icon" href="/logo.png">
+<!-- Adicionar à tela de início: vira aplicativo, com ícone e nome próprios.
+     O iOS arredonda o ícone sozinho; não precisa arredondar no arquivo. -->
+<link rel="apple-touch-icon" href="/icone-painel-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Painel Fotos">
+<meta name="application-name" content="Painel Fotos">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- Telas de abertura do iPhone (uma por tamanho de aparelho): sem elas,
+     o app abre com um clarão branco antes do site. -->
+<link rel="apple-touch-startup-image" href="/splash/splash-640x1136.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2208.png"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-828x1792.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2688.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1170x2532.png"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1284x2778.png"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1179x2556.png"
+      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1290x2796.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1206x2622.png"
+      media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1320x2868.png"
+      media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <img class="hero__mark" src="/marca.png" alt="" aria-hidden="true">
+    <img class="hero__logo" src="/logo.png" alt="Igreja Evangélica Vinho Novo em Saquarema">
+    <h1 class="hero__titulo" id="tituloTopo">Painel das fotos</h1>
+    <p class="hero__sub" id="subTopo">Crie os álbuns e mande as fotos para a igreja baixar.</p>
+  </header>
+
+  <main class="conteudo">
+
+    <!-- =============== lista de álbuns =============== -->
+    <section class="painel-branco" id="telaAlbuns">
+      <div class="barra" style="margin-top:0; padding-top:0; border-top:0;">
+        <button class="botao botao--ouro" id="novoAlbum" type="button">+ Novo álbum</button>
+        <span class="barra__espaco"></span>
+        <span class="barra__conta" id="ondeGuarda"></span>
+      </div>
+
+      <form class="escondido" id="formAlbum">
+        <label class="campo">
+          <span class="campo__rotulo">Nome do álbum</span>
+          <input class="campo__entrada" id="titulo" maxlength="120" required placeholder="Batismo no rio">
+        </label>
+        <label class="campo">
+          <span class="campo__rotulo">Data do evento</span>
+          <input class="campo__entrada" id="data" type="date" required>
+        </label>
+        <label class="campo">
+          <span class="campo__rotulo">Descrição (opcional)</span>
+          <textarea class="campo__entrada" id="descricao" maxlength="400" placeholder="Fotos do batismo da manhã"></textarea>
+        </label>
+        <label class="campo--linha">
+          <input type="checkbox" id="publicado" checked>
+          <span>Já aparece para todo mundo no site</span>
+        </label>
+        <div class="barra">
+          <button class="botao" id="salvarAlbum" type="submit">Salvar álbum</button>
+          <button class="botao botao--calmo" id="cancelarAlbum" type="button">Cancelar</button>
+        </div>
+      </form>
+
+      <p id="recado" class="aviso">Carregando...</p>
+      <ul id="listaAlbuns" class="albuns"></ul>
+    </section>
+
+    <!-- =============== um álbum aberto =============== -->
+    <section class="painel-branco escondido" id="telaAlbum">
+      <div class="barra" style="margin-top:0; padding-top:0; border-top:0;">
+        <button class="botao botao--calmo" id="voltar" type="button">&#8592; Álbuns</button>
+        <span class="barra__espaco"></span>
+        <button class="botao botao--calmo botao--miudo" id="editarAlbum" type="button">Editar</button>
+        <button class="botao botao--perigo botao--miudo" id="apagarAlbum" type="button">Apagar álbum</button>
+      </div>
+
+      <h2 id="albumTitulo" style="margin:14px 0 2px; letter-spacing:-.01em;"></h2>
+      <p id="albumMeta" class="album__meta"></p>
+      <p id="albumLink" class="album__meta"></p>
+
+      <div class="solta" id="solta">
+        <span class="solta__forte">Toque aqui para escolher as fotos</span>
+        ou arraste as imagens para dentro deste quadro
+      </div>
+      <input id="arquivos" type="file" accept="image/*" multiple class="escondido">
+
+      <label class="campo--linha">
+        <input type="checkbox" id="reduzir" checked>
+        <span>Diminuir as fotos para até 2560 px (recomendado: cabe muito mais foto no plano grátis)</span>
+      </label>
+
+      <div class="progresso escondido" id="progresso">
+        <div class="progresso__trilho"><div class="progresso__barra" id="barra"></div></div>
+        <p class="progresso__texto" id="progressoTexto"></p>
+      </div>
+
+      <p id="recadoAlbum" class="aviso escondido"></p>
+      <ul id="gradeFotos" class="fotos"></ul>
+    </section>
+
+  </main>
+
+  <footer class="rodape">
+    Painel reservado à liderança — não compartilhe este endereço.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // A chave vem do endereço: /painel/MINHA-CHAVE  (ou ?chave=MINHA-CHAVE)
+  var chave = (function () {
+    var daBusca = new URLSearchParams(location.search).get("chave");
+    if (daBusca) return daBusca;
+    var partes = location.pathname.split("/").filter(Boolean);
+    return partes.length > 1 ? decodeURIComponent(partes[1]) : "";
+  })();
+
+  var LADO_MAXIMO = 2560;      // maior lado da foto quando "diminuir" está ligado
+  var LADO_MINIATURA = 700;    // miniatura que aparece na grade
+  var POR_VEZ = 3;             // quantas fotos sobem ao mesmo tempo
+
+  var telaAlbuns = document.getElementById("telaAlbuns");
+  var telaAlbum = document.getElementById("telaAlbum");
+  var listaAlbuns = document.getElementById("listaAlbuns");
+  var recado = document.getElementById("recado");
+  var recadoAlbum = document.getElementById("recadoAlbum");
+  var formAlbum = document.getElementById("formAlbum");
+  var gradeFotos = document.getElementById("gradeFotos");
+  var progresso = document.getElementById("progresso");
+  var barra = document.getElementById("barra");
+  var progressoTexto = document.getElementById("progressoTexto");
+  var entradaArquivos = document.getElementById("arquivos");
+
+  var albuns = [];
+  var aberto = null;      // álbum aberto agora
+  var editando = null;    // id do álbum sendo editado (null = novo)
+  var enviando = false;
+
+  var MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+               "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+  function porExtenso(data) {
+    var p = String(data || "").split("-");
+    if (p.length !== 3) return "";
+    return Number(p[2]) + " de " + MESES[Number(p[1]) - 1] + " de " + p[0];
+  }
+
+  function avisar(elemento, texto, tipo) {
+    elemento.textContent = texto;
+    elemento.className = "aviso" + (tipo ? " aviso--" + tipo : "") + (texto ? "" : " escondido");
+  }
+
+  // Toda conversa com o servidor leva a chave junto.
+  function pedir(rota, dados) {
+    return fetch("/api/" + rota, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({ chave: chave }, dados || {}))
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (corpo) {
+        if (!r.ok) throw new Error(corpo.erro || ("Erro " + r.status));
+        return corpo;
+      });
+    });
+  }
+
+  // ================================================== lista de álbuns
+  function carregarAlbuns() {
+    return pedir("painel").then(function (dado) {
+      albuns = dado.albuns || [];
+      document.getElementById("ondeGuarda").textContent = "Fotos guardadas em: " + (dado.guardadas_em || "");
+      desenharAlbuns();
+    }).catch(function (e) {
+      avisar(recado, e.message === "Chave inválida."
+        ? "Chave inválida. Confira o endereço do painel."
+        : "Não consegui carregar os álbuns: " + e.message, "erro");
+    });
+  }
+
+  function desenharAlbuns() {
+    listaAlbuns.textContent = "";
+    if (!albuns.length) {
+      avisar(recado, "Nenhum álbum ainda. Toque em \"Novo álbum\" para começar.", "");
+      return;
+    }
+    avisar(recado, "", "");
+
+    albuns.forEach(function (a) {
+      var item = document.createElement("li");
+      var cartao = document.createElement("button");
+      cartao.className = "album";
+      cartao.type = "button";
+      cartao.style.textAlign = "left";
+      cartao.style.padding = "0";
+      cartao.addEventListener("click", function () { abrirAlbum(a.slug); });
+
+      if (a.capa) {
+        var img = document.createElement("img");
+        img.className = "album__capa";
+        img.src = a.capa;
+        img.alt = "";
+        img.loading = "lazy";
+        cartao.appendChild(img);
+      } else {
+        var vazia = document.createElement("div");
+        vazia.className = "album__vazia";
+        vazia.textContent = "Sem fotos ainda";
+        cartao.appendChild(vazia);
+      }
+
+      var corpo = document.createElement("div");
+      corpo.className = "album__corpo";
+
+      var titulo = document.createElement("h2");
+      titulo.className = "album__titulo";
+      titulo.textContent = a.titulo;
+      corpo.appendChild(titulo);
+
+      var meta = document.createElement("p");
+      meta.className = "album__meta";
+      meta.textContent = porExtenso(a.data_evento) + " • " + a.fotos + (a.fotos === 1 ? " foto" : " fotos");
+      corpo.appendChild(meta);
+
+      var gente = document.createElement("p");
+      gente.className = "album__meta";
+      gente.textContent = a.visitas
+        ? "👁 " + a.visitas + (a.visitas === 1 ? " pessoa abriu" : " pessoas abriram")
+        : "👁 ninguém abriu ainda";
+      corpo.appendChild(gente);
+
+      if (!a.publicado) {
+        var oculto = document.createElement("span");
+        oculto.className = "album__oculto";
+        oculto.textContent = "oculto — ninguém vê ainda";
+        corpo.appendChild(oculto);
+      }
+
+      cartao.appendChild(corpo);
+      item.appendChild(cartao);
+      listaAlbuns.appendChild(item);
+    });
+  }
+
+  // ================================================== criar / editar
+  function abrirFormulario(album) {
+    editando = album ? album.id : null;
+    document.getElementById("titulo").value = album ? album.titulo : "";
+    document.getElementById("data").value = album ? album.data_evento : new Date().toISOString().slice(0, 10);
+    document.getElementById("descricao").value = album ? album.descricao : "";
+    document.getElementById("publicado").checked = album ? album.publicado : true;
+    formAlbum.classList.remove("escondido");
+    telaAlbuns.classList.remove("escondido");
+    telaAlbum.classList.add("escondido");
+    document.getElementById("titulo").focus();
+  }
+
+  document.getElementById("novoAlbum").addEventListener("click", function () { abrirFormulario(null); });
+  document.getElementById("cancelarAlbum").addEventListener("click", function () {
+    formAlbum.classList.add("escondido");
+  });
+
+  formAlbum.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var botao = document.getElementById("salvarAlbum");
+    botao.disabled = true;
+
+    pedir("album-salvar", {
+      id: editando,
+      titulo: document.getElementById("titulo").value,
+      data_evento: document.getElementById("data").value,
+      descricao: document.getElementById("descricao").value,
+      publicado: document.getElementById("publicado").checked
+    }).then(function (dado) {
+      formAlbum.classList.add("escondido");
+      return carregarAlbuns().then(function () {
+        if (dado.album && dado.album.slug) abrirAlbum(dado.album.slug);
+      });
+    }).catch(function (erro) {
+      avisar(recado, "Não deu para salvar: " + erro.message, "erro");
+    }).then(function () {
+      botao.disabled = false;
+    });
+  });
+
+  // ================================================== álbum aberto
+  function abrirAlbum(slug) {
+    return pedir("painel-fotos", { slug: slug }).then(function (dado) {
+      aberto = dado.album;
+      telaAlbuns.classList.add("escondido");
+      telaAlbum.classList.remove("escondido");
+      formAlbum.classList.add("escondido");
+      window.scrollTo(0, 0);
+
+      document.getElementById("albumTitulo").textContent = aberto.titulo;
+      document.getElementById("albumMeta").textContent =
+        porExtenso(aberto.data_evento) + " • " + dado.fotos.length +
+        (dado.fotos.length === 1 ? " foto" : " fotos") +
+        (aberto.publicado ? "" : " • oculto do site");
+      document.getElementById("albumLink").textContent =
+        "Link para a igreja: " + location.origin + "/album/" + aberto.slug;
+
+      desenharFotos(dado.fotos);
+      avisar(recadoAlbum, "", "");
+    }).catch(function (e) {
+      avisar(recado, "Não consegui abrir o álbum: " + e.message, "erro");
+    });
+  }
+
+  function desenharFotos(fotos) {
+    gradeFotos.textContent = "";
+    fotos.forEach(function (f) {
+      var item = document.createElement("li");
+      item.className = "foto";
+
+      var img = document.createElement("img");
+      img.className = "foto__img";
+      img.src = f.mini;
+      img.alt = f.nome;
+      img.loading = "lazy";
+      img.style.cursor = "default";
+      item.appendChild(img);
+
+      if (f.capa) {
+        var marca = document.createElement("span");
+        marca.className = "foto__capa";
+        marca.textContent = "capa";
+        item.appendChild(marca);
+      }
+
+      var apagar = document.createElement("button");
+      apagar.className = "foto__acao foto__acao--apagar";
+      apagar.type = "button";
+      apagar.title = "Apagar esta foto";
+      apagar.setAttribute("aria-label", "Apagar " + f.nome);
+      apagar.innerHTML = "&#10005;";
+      apagar.addEventListener("click", function () {
+        if (!confirm("Apagar esta foto? Não dá para voltar atrás.")) return;
+        apagar.disabled = true;
+        pedir("foto-apagar", { id: f.id })
+          .then(function () { return abrirAlbum(aberto.slug); })
+          .catch(function (e) { avisar(recadoAlbum, "Não deu para apagar: " + e.message, "erro"); });
+      });
+      item.appendChild(apagar);
+
+      if (!f.capa) {
+        var virarCapa = document.createElement("button");
+        virarCapa.className = "foto__acao";
+        virarCapa.type = "button";
+        virarCapa.title = "Usar como capa do álbum";
+        virarCapa.setAttribute("aria-label", "Usar " + f.nome + " como capa");
+        virarCapa.innerHTML = "&#9733;";
+        virarCapa.addEventListener("click", function () {
+          pedir("album-capa", { foto_id: f.id })
+            .then(function () { return abrirAlbum(aberto.slug); })
+            .catch(function (e) { avisar(recadoAlbum, "Não deu para trocar a capa: " + e.message, "erro"); });
+        });
+        item.appendChild(virarCapa);
+      }
+
+      gradeFotos.appendChild(item);
+    });
+  }
+
+  document.getElementById("voltar").addEventListener("click", function () {
+    telaAlbum.classList.add("escondido");
+    telaAlbuns.classList.remove("escondido");
+    carregarAlbuns();
+  });
+
+  document.getElementById("editarAlbum").addEventListener("click", function () {
+    abrirFormulario(aberto);
+  });
+
+  document.getElementById("apagarAlbum").addEventListener("click", function () {
+    var digitado = prompt("Isto apaga o álbum e TODAS as fotos dele, para sempre.\n" +
+                          "Para confirmar, escreva o nome do álbum:");
+    if (digitado === null) return;
+    if (digitado.trim().toLowerCase() !== aberto.titulo.trim().toLowerCase()) {
+      alert("O nome não bateu. Nada foi apagado.");
+      return;
+    }
+    pedir("album-apagar", { id: aberto.id }).then(function () {
+      telaAlbum.classList.add("escondido");
+      telaAlbuns.classList.remove("escondido");
+      return carregarAlbuns();
+    }).catch(function (e) {
+      avisar(recadoAlbum, "Não deu para apagar: " + e.message, "erro");
+    });
+  });
+
+  // ================================================== enviar as fotos
+  var solta = document.getElementById("solta");
+  solta.addEventListener("click", function () { entradaArquivos.click(); });
+  entradaArquivos.addEventListener("change", function () {
+    enviarTodas(Array.prototype.slice.call(entradaArquivos.files));
+    entradaArquivos.value = "";
+  });
+  ["dragenter", "dragover"].forEach(function (evento) {
+    solta.addEventListener(evento, function (e) { e.preventDefault(); solta.classList.add("sobre"); });
+  });
+  ["dragleave", "drop"].forEach(function (evento) {
+    solta.addEventListener(evento, function (e) { e.preventDefault(); solta.classList.remove("sobre"); });
+  });
+  solta.addEventListener("drop", function (e) {
+    var arquivos = Array.prototype.slice.call(e.dataTransfer.files).filter(function (f) {
+      return /^image\//.test(f.type);
+    });
+    enviarTodas(arquivos);
+  });
+
+  // Abre a imagem respeitando a rotação que a câmera gravou.
+  function abrirImagem(arquivo) {
+    if (window.createImageBitmap) {
+      return createImageBitmap(arquivo, { imageOrientation: "from-image" }).catch(function () {
+        return abrirPelaTag(arquivo);
+      });
+    }
+    return abrirPelaTag(arquivo);
+  }
+
+  function abrirPelaTag(arquivo) {
+    return new Promise(function (ok, falhou) {
+      var url = URL.createObjectURL(arquivo);
+      var img = new Image();
+      img.onload = function () { URL.revokeObjectURL(url); ok(img); };
+      img.onerror = function () { URL.revokeObjectURL(url); falhou(new Error("não abriu")); };
+      img.src = url;
+    });
+  }
+
+  // Redesenha a imagem menor e devolve um JPEG.
+  function encolher(imagem, ladoMaximo, qualidade) {
+    var largura = imagem.width, altura = imagem.height;
+    var escala = Math.min(1, ladoMaximo / Math.max(largura, altura));
+    var tela = document.createElement("canvas");
+    tela.width = Math.max(1, Math.round(largura * escala));
+    tela.height = Math.max(1, Math.round(altura * escala));
+    var pincel = tela.getContext("2d");
+    pincel.imageSmoothingQuality = "high";
+    // JPEG não guarda transparência: sem este fundo branco, um PNG vazado
+    // ficaria com manchas pretas.
+    pincel.fillStyle = "#ffffff";
+    pincel.fillRect(0, 0, tela.width, tela.height);
+    pincel.drawImage(imagem, 0, 0, tela.width, tela.height);
+    return new Promise(function (ok) {
+      tela.toBlob(function (blob) { ok(blob); }, "image/jpeg", qualidade);
+    });
+  }
+
+  function trocarExtensao(nome, nova) {
+    return nome.replace(/\.[^.]+$/, "") + nova;
+  }
+
+  // Prepara uma foto: versão para baixar + miniatura para a grade.
+  function preparar(arquivo, reduzir) {
+    return abrirImagem(arquivo).then(function (imagem) {
+      var grande = (reduzir && Math.max(imagem.width, imagem.height) > LADO_MAXIMO)
+        ? encolher(imagem, LADO_MAXIMO, 0.86).then(function (blob) {
+            return { blob: blob, nome: trocarExtensao(arquivo.name, ".jpg"), tipo: "image/jpeg" };
+          })
+        : Promise.resolve({ blob: arquivo, nome: arquivo.name, tipo: arquivo.type });
+
+      return grande.then(function (g) {
+        return encolher(imagem, LADO_MINIATURA, 0.72).then(function (mini) {
+          if (imagem.close) imagem.close();
+          return { grande: g, mini: mini };
+        });
+      });
+    }).catch(function () {
+      // Formato que o navegador não sabe abrir (HEIC do iPhone, por exemplo):
+      // manda o arquivo original mesmo, sem miniatura.
+      return { grande: { blob: arquivo, nome: arquivo.name, tipo: arquivo.type }, mini: null };
+    });
+  }
+
+  function mandarArquivo(destino, blob) {
+    var corpo = blob;
+    var cabecalhos = destino.cabecalhos;
+
+    // O Cloudinary recebe formulário; o Supabase e o R2 recebem o arquivo cru.
+    if (destino.campos) {
+      corpo = new FormData();
+      Object.keys(destino.campos).forEach(function (campo) {
+        corpo.append(campo, destino.campos[campo]);
+      });
+      corpo.append("file", blob);
+      cabecalhos = undefined;   // o navegador monta o cabeçalho do formulário
+    }
+
+    return fetch(destino.url, {
+      method: destino.metodo,
+      headers: cabecalhos,
+      body: corpo
+    }).then(function (r) {
+      if (r.ok) return;
+      return r.text().then(function (texto) {
+        var motivo = texto;
+        try { var j = JSON.parse(texto); motivo = (j.error && j.error.message) || j.message || texto; } catch (e) {}
+        throw new Error("envio " + r.status + ": " + String(motivo).slice(0, 120));
+      });
+    });
+  }
+
+  function enviarTodas(arquivos) {
+    if (!aberto || enviando || !arquivos.length) return;
+
+    var reduzir = document.getElementById("reduzir").checked;
+    var gigantes = arquivos.filter(function (f) { return f.size > 25 * 1024 * 1024; });
+    if (gigantes.length && !reduzir) {
+      avisar(recadoAlbum, gigantes.length + " foto(s) passam de 25 MB. Ligue a opção de diminuir as fotos.", "erro");
+      return;
+    }
+
+    enviando = true;
+    var feitas = 0, falhas = 0, motivo = "";
+    progresso.classList.remove("escondido");
+    barra.style.width = "0%";
+    progressoTexto.textContent = "Preparando " + arquivos.length + " foto(s)...";
+    avisar(recadoAlbum, "", "");
+
+    function passo() {
+      feitas += 1;
+      barra.style.width = Math.round((feitas / arquivos.length) * 100) + "%";
+      progressoTexto.textContent = "Enviando... " + feitas + " de " + arquivos.length +
+                                   (falhas ? " (" + falhas + " com problema)" : "");
+    }
+
+    function uma(arquivo) {
+      return preparar(arquivo, reduzir).then(function (pronta) {
+        return pedir("upload-url", {
+          slug: aberto.slug,
+          arquivos: [{ nome: pronta.grande.nome, tipo: pronta.grande.tipo, tamanho: pronta.grande.blob.size }]
+        }).then(function (dado) {
+          var destino = (dado.destinos || [])[0];
+          if (!destino || destino.erro) throw new Error(destino ? destino.erro : "sem destino");
+
+          var envios = [mandarArquivo(destino.envio, pronta.grande.blob)];
+          if (pronta.mini) envios.push(mandarArquivo(destino.envio_mini, pronta.mini));
+
+          return Promise.all(envios).then(function () {
+            return pedir("foto-registrar", {
+              slug: aberto.slug,
+              caminho: destino.caminho,
+              caminho_mini: pronta.mini ? destino.caminho_mini : "",
+              nome_arquivo: pronta.grande.nome,
+              tamanho: pronta.grande.blob.size
+            });
+          });
+        });
+      }).catch(function (erro) {
+        falhas += 1;
+        if (!motivo) motivo = erro && erro.message ? erro.message : "motivo desconhecido";
+      }).then(passo);
+    }
+
+    // Poucas ao mesmo tempo: internet de celular não gosta de pressa.
+    var fila = arquivos.slice();
+    var trilhas = [];
+    for (var t = 0; t < Math.min(POR_VEZ, fila.length); t++) {
+      trilhas.push((function proxima() {
+        var arquivo = fila.shift();
+        if (!arquivo) return Promise.resolve();
+        return uma(arquivo).then(proxima);
+      })());
+    }
+
+    Promise.all(trilhas).then(function () {
+      enviando = false;
+      progresso.classList.add("escondido");
+      if (falhas) {
+        avisar(recadoAlbum, (arquivos.length - falhas) + " foto(s) entraram. " + falhas +
+               " não subiram. Motivo: " + motivo, "erro");
+      } else {
+        avisar(recadoAlbum, arquivos.length + " foto(s) publicadas.", "ok");
+      }
+      abrirAlbum(aberto.slug);
+    });
+  }
+
+  // ================================================== começo
+  if (!chave) {
+    avisar(recado, "Endereço incompleto. Use o link com a chave: /painel/SUA-CHAVE", "erro");
+  } else {
+    carregarAlbuns();
+  }
+})();
+</script>
+</body>
+</html>

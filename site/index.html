@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4A1B3A">
+<title>Fotos — Vinho Novo Saquarema</title>
+<meta name="description" content="Fotos dos cultos e eventos da Igreja Evangélica Vinho Novo em Saquarema, para baixar no celular.">
+<link rel="icon" href="/logo.png">
+<!-- Adicionar à tela de início: vira aplicativo, com ícone e nome próprios.
+     O iOS arredonda o ícone sozinho; não precisa arredondar no arquivo. -->
+<link rel="apple-touch-icon" href="/icone-180.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vinho Novo">
+<meta name="application-name" content="Vinho Novo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- Telas de abertura do iPhone (uma por tamanho de aparelho): sem elas,
+     o app abre com um clarão branco antes do site. -->
+<link rel="apple-touch-startup-image" href="/splash/splash-640x1136.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2208.png"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-828x1792.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2688.png"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1170x2532.png"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1284x2778.png"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1179x2556.png"
+      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1290x2796.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1206x2622.png"
+      media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1320x2868.png"
+      media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+
+<!-- Abertura: aparece no primeiro acesso, com a capa do vídeo e um botão.
+     Nada toca sozinho — navegador de celular bloqueia isso o tempo todo. -->
+<div class="abertura" id="abertura" hidden>
+  <video class="abertura__video" id="aberturaVideo"
+         src="/abertura-v3.mp4" poster="/abertura-capa.jpg" playsinline preload="metadata"
+         aria-label="Vídeo de abertura da igreja"></video>
+  <p class="abertura__aviso" id="aberturaAviso"></p>
+  <div class="abertura__acoes">
+    <button class="botao botao--ouro abertura__play" id="aberturaPlay" type="button">
+      &#9654;&nbsp; Assistir o vídeo
+    </button>
+    <button class="botao botao--calmo" id="aberturaPular" type="button">Pular e ver as fotos</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <header class="hero">
+    <img class="hero__mark" src="/marca.png" alt="" aria-hidden="true">
+    <img class="hero__mark hero__mark--2" src="/marca.png" alt="" aria-hidden="true">
+    <img class="hero__logo" src="/logo.png" alt="Igreja Evangélica Vinho Novo em Saquarema">
+    <h1 class="hero__titulo">Fotos da igreja</h1>
+    <p class="hero__sub">Escolha o álbum, veja as fotos e leve para o seu celular. É de graça e não precisa de cadastro.</p>
+  </header>
+
+  <main class="conteudo">
+    <div class="painel-branco">
+      <label class="campo__rotulo" for="busca">Procurar um álbum</label>
+      <input id="busca" class="busca" type="search" placeholder="Batismo, Natal, retiro..." autocomplete="off">
+
+      <p id="recado" class="aviso">Carregando os álbuns...</p>
+      <ul id="lista" class="albuns"></ul>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    Igreja Evangélica Vinho Novo em Saquarema
+  </footer>
+
+</div>
+
+<script>
+// ---------------------------------------------------------------- abertura
+// O vídeo abre o site no primeiro acesso: aparece a capa dele com dois
+// botões — assistir (com som) ou pular. Nada toca sozinho, porque navegador
+// de celular bloqueia autoplay e a pessoa ficava olhando tela parada.
+(function () {
+  "use strict";
+
+  var caixa = document.getElementById("abertura");
+  var video = document.getElementById("aberturaVideo");
+  var pagina = document.querySelector(".page");
+
+  // A abertura roda só no PRIMEIRO acesso do aparelho. A marca fica no
+  // navegador; se ele não deixar guardar (o navegador de dentro do WhatsApp
+  // costuma bloquear), vai por cookie, que quase sempre passa.
+  function jaViu() {
+    // Endereço com "?video=1" mostra a abertura de novo, mesmo para quem já
+    // viu. Serve para testar e para apresentar o vídeo a quem quiser rever.
+    if (new URLSearchParams(location.search).get("video")) return false;
+    // Voltando de um álbum: o próprio endereço diz que a abertura já passou.
+    // Isso funciona mesmo onde o navegador proíbe guardar qualquer marca
+    // (é o caso do navegador de dentro do WhatsApp).
+    if (new URLSearchParams(location.search).get("ja")) return true;
+    try { if (localStorage.getItem("abertura-vista") === "1") return true; } catch (e) { /* bloqueado */ }
+    try { if (sessionStorage.getItem("abertura-vista") === "1") return true; } catch (e) { /* bloqueado */ }
+    return document.cookie.indexOf("aberturaVista=1") !== -1;
+  }
+  function marcarVista() {
+    try { localStorage.setItem("abertura-vista", "1"); } catch (e) { /* bloqueado */ }
+    try { sessionStorage.setItem("abertura-vista", "1"); } catch (e) { /* bloqueado */ }
+    try { document.cookie = "aberturaVista=1; max-age=31536000; path=/; samesite=lax"; } catch (e) { /* bloqueado */ }
+  }
+
+  if (jaViu()) return;
+
+  function fechar() {
+    if (caixa.classList.contains("abertura--saindo")) return;   // dois cliques
+    marcarVista();
+    caixa.classList.add("abertura--saindo");
+    pagina.classList.remove("page--esperando");
+    document.body.style.overflow = "";
+    setTimeout(function () {
+      caixa.hidden = true;
+      try { video.pause(); video.removeAttribute("src"); video.load(); } catch (e) { /* nada */ }
+    }, 650);
+  }
+
+  pagina.classList.add("page--esperando");
+  caixa.hidden = false;
+  document.body.style.overflow = "hidden";
+
+  var aviso = document.getElementById("aberturaAviso");
+  var play = document.getElementById("aberturaPlay");
+
+  video.addEventListener("ended", fechar);
+  // Se o arquivo não carregar, ninguém fica preso numa tela parada.
+  video.addEventListener("error", fechar);
+
+  document.getElementById("aberturaPular").addEventListener("click", function (e) {
+    e.stopPropagation();
+    fechar();
+  });
+
+  // O toque da pessoa é o que libera o som: navegador nenhum barra vídeo
+  // que o próprio usuário mandou tocar.
+  function assistir() {
+    // Já está tocando mudo? Então o botão virou "ligar o som".
+    if (!video.paused && video.muted) {
+      video.muted = false;
+      play.hidden = true;
+      return;
+    }
+
+    aviso.textContent = "Carregando...";
+    video.muted = false;
+    video.play().then(function () {
+      aviso.textContent = "";
+      play.hidden = true;
+    }).catch(function () {
+      // Recusou com som: tenta mudo e deixa o botão para ligar o áudio.
+      video.muted = true;
+      video.play().then(function () {
+        aviso.textContent = "";
+        play.textContent = "Ativar o som";
+      }).catch(function () {
+        // Não deixou de jeito nenhum: mostra as fotos em vez de insistir.
+        fechar();
+      });
+    });
+  }
+  play.addEventListener("click", function (e) { e.stopPropagation(); assistir(); });
+  video.addEventListener("click", function () { if (video.paused) assistir(); });
+  video.addEventListener("playing", function () { aviso.textContent = ""; });
+
+  // Internet fraca no meio do vídeo: se o tempo parar de andar por uns 8
+  // segundos, a abertura sai em vez de deixar a tela travada.
+  var ultimo = 0, parado = 0;
+  var vigia = setInterval(function () {
+    if (caixa.hidden) { clearInterval(vigia); return; }
+    if (video.paused) { parado = 0; return; }          // ainda não começou: sem pressa
+    if (video.currentTime > ultimo + 0.1) { ultimo = video.currentTime; parado = 0; return; }
+    parado += 1;
+    if (parado >= 2) { clearInterval(vigia); fechar(); }
+  }, 4000);
+})();
+
+// ---------------------------------------------------------------- galeria
+(function () {
+  "use strict";
+
+  var lista = document.getElementById("lista");
+  var recado = document.getElementById("recado");
+  var busca = document.getElementById("busca");
+  var albuns = [];
+
+  var MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+               "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+  // "2026-08-15" -> "15 de agosto de 2026"
+  function porExtenso(data) {
+    var p = String(data || "").split("-");
+    if (p.length !== 3) return "";
+    return Number(p[2]) + " de " + MESES[Number(p[1]) - 1] + " de " + p[0];
+  }
+
+  function contagem(n) {
+    return n + (n === 1 ? " foto" : " fotos");
+  }
+
+  function mostrarRecado(texto, tipo) {
+    recado.textContent = texto;
+    recado.className = "aviso" + (tipo ? " aviso--" + tipo : "");
+    recado.hidden = !texto;
+  }
+
+  function desenhar() {
+    var termo = busca.value.trim().toLowerCase();
+    var visiveis = albuns.filter(function (a) {
+      if (!termo) return true;
+      return (a.titulo + " " + a.descricao + " " + porExtenso(a.data_evento)).toLowerCase().indexOf(termo) !== -1;
+    });
+
+    lista.textContent = "";
+    visiveis.forEach(function (a, indice) {
+      var item = document.createElement("li");
+
+      var link = document.createElement("a");
+      link.className = "album";
+      link.href = "/album/" + encodeURIComponent(a.slug);
+
+      if (a.capa) {
+        var img = document.createElement("img");
+        img.className = "album__capa";
+        img.src = a.capa;
+        img.alt = "";
+        img.loading = "lazy";
+        link.appendChild(img);
+      } else {
+        var vazia = document.createElement("div");
+        vazia.className = "album__vazia";
+        vazia.textContent = "Sem fotos ainda";
+        link.appendChild(vazia);
+      }
+
+      var corpo = document.createElement("div");
+      corpo.className = "album__corpo";
+
+      var titulo = document.createElement("h2");
+      titulo.className = "album__titulo";
+      titulo.textContent = a.titulo;
+      corpo.appendChild(titulo);
+
+      var meta = document.createElement("p");
+      meta.className = "album__meta";
+      meta.textContent = porExtenso(a.data_evento) + " • " + contagem(a.fotos);
+      corpo.appendChild(meta);
+
+      if (a.descricao) {
+        var desc = document.createElement("p");
+        desc.className = "album__desc";
+        desc.textContent = a.descricao;
+        corpo.appendChild(desc);
+      }
+
+      link.appendChild(corpo);
+      item.appendChild(link);
+      // um card depois do outro, bem de leve
+      item.style.animationDelay = Math.min(indice * 45, 400) + "ms";
+      lista.appendChild(item);
+    });
+
+    if (!albuns.length) {
+      mostrarRecado("Ainda não há álbuns publicados. Volte em breve.", "");
+    } else if (!visiveis.length) {
+      mostrarRecado("Nenhum álbum com esse nome.", "");
+    } else {
+      mostrarRecado("", "");
+    }
+  }
+
+  busca.addEventListener("input", desenhar);
+
+  fetch("/api/albuns")
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("http " + r.status)); })
+    .then(function (dado) {
+      albuns = dado.albuns || [];
+      desenhar();
+    })
+    .catch(function () {
+      mostrarRecado("Não consegui carregar os álbuns. Confira a internet e tente de novo.", "erro");
+    });
+})();
+</script>
+</body>
+</html>
