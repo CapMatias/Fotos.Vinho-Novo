@@ -26,7 +26,7 @@ Três telas:
 | Servidor | `netlify/functions/` — cria álbuns, assina os endereços e registra as fotos |
 | Banco | Supabase (PostgreSQL), tabelas criadas por `supabase.sql` |
 | Fotos | Cloudinary, Cloudflare R2 ou Supabase Storage — escolhido pelas variáveis de ambiente |
-| Hospedagem | Netlify, configurada por `netlify.toml` |
+| Hospedagem | Vercel (`vercel.json` + `api/[rota].js`) ou Netlify (`netlify.toml`) — o mesmo código serve as duas |
 
 As tabelas ficam trancadas (RLS ligado, sem políticas públicas): ninguém acessa
 direto pela internet. Só as funções do servidor, que usam a chave de serviço,
@@ -49,7 +49,17 @@ celular e o espaço grátis render muito mais.
 
 Passo a passo completo em [COMO-INSTALAR.md](COMO-INSTALAR.md).
 
-Variáveis de ambiente exigidas na Netlify:
+O site roda em qualquer uma das duas hospedagens, sem mudar código:
+
+- **Vercel** — `vercel.json` manda publicar a pasta `site/`, e `api/[rota].js`
+  traduz os pedidos para as funções. Publicações ilimitadas no plano grátis.
+- **Netlify** — `netlify.toml` faz o mesmo papel. Cobra 15 créditos por
+  publicação no plano grátis atual.
+
+As funções continuam em `netlify/functions/` (nome herdado da primeira
+hospedagem) e são as mesmas nos dois casos.
+
+Variáveis de ambiente exigidas (mesmos nomes nas duas):
 
 ```
 SUPABASE_URL

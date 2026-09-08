@@ -108,7 +108,10 @@ exports.handler = async (event) => {
     laudo.arquivos = "FALHOU — " + e.message.slice(0, 160);
   }
 
-  const tudoOk = Object.values(laudo.variaveis).every((v) => v === "ok") &&
+  // Só estas três são obrigatórias. As do Cloudinary são opcionais: sem elas
+  // o site usa o Supabase Storage, e isso não é defeito.
+  const essenciais = ["SUPABASE_URL", "SUPABASE_SERVICE_KEY", "PAINEL_KEY"];
+  const tudoOk = essenciais.every((nome) => laudo.variaveis[nome] === "ok") &&
                  Object.values(laudo.banco).every((v) => v === "ok") &&
                  laudo.arquivos.indexOf("ok") === 0;
 
