@@ -46,21 +46,6 @@
 </head>
 <body>
 
-<!-- Abertura: aparece no primeiro acesso, com a capa do vídeo e um botão.
-     Nada toca sozinho — navegador de celular bloqueia isso o tempo todo. -->
-<div class="abertura" id="abertura" hidden>
-  <video class="abertura__video" id="aberturaVideo"
-         src="/abertura-v3.mp4" poster="/abertura-capa.jpg" playsinline preload="metadata"
-         aria-label="Vídeo de abertura da igreja"></video>
-  <p class="abertura__aviso" id="aberturaAviso"></p>
-  <div class="abertura__acoes">
-    <button class="botao botao--ouro abertura__play" id="aberturaPlay" type="button">
-      &#9654;&nbsp; Assistir o vídeo
-    </button>
-    <button class="botao botao--calmo" id="aberturaPular" type="button">Pular e ver as fotos</button>
-  </div>
-</div>
-
 <div class="page">
 
   <header class="hero">
@@ -88,111 +73,6 @@
 </div>
 
 <script>
-// ---------------------------------------------------------------- abertura
-// O vídeo abre o site no primeiro acesso: aparece a capa dele com dois
-// botões — assistir (com som) ou pular. Nada toca sozinho, porque navegador
-// de celular bloqueia autoplay e a pessoa ficava olhando tela parada.
-(function () {
-  "use strict";
-
-  var caixa = document.getElementById("abertura");
-  var video = document.getElementById("aberturaVideo");
-  var pagina = document.querySelector(".page");
-
-  // A abertura roda só no PRIMEIRO acesso do aparelho. A marca fica no
-  // navegador; se ele não deixar guardar (o navegador de dentro do WhatsApp
-  // costuma bloquear), vai por cookie, que quase sempre passa.
-  function jaViu() {
-    // Endereço com "?video=1" mostra a abertura de novo, mesmo para quem já
-    // viu. Serve para testar e para apresentar o vídeo a quem quiser rever.
-    if (new URLSearchParams(location.search).get("video")) return false;
-    // Voltando de um álbum: o próprio endereço diz que a abertura já passou.
-    // Isso funciona mesmo onde o navegador proíbe guardar qualquer marca
-    // (é o caso do navegador de dentro do WhatsApp).
-    if (new URLSearchParams(location.search).get("ja")) return true;
-    try { if (localStorage.getItem("abertura-vista") === "1") return true; } catch (e) { /* bloqueado */ }
-    try { if (sessionStorage.getItem("abertura-vista") === "1") return true; } catch (e) { /* bloqueado */ }
-    return document.cookie.indexOf("aberturaVista=1") !== -1;
-  }
-  function marcarVista() {
-    try { localStorage.setItem("abertura-vista", "1"); } catch (e) { /* bloqueado */ }
-    try { sessionStorage.setItem("abertura-vista", "1"); } catch (e) { /* bloqueado */ }
-    try { document.cookie = "aberturaVista=1; max-age=31536000; path=/; samesite=lax"; } catch (e) { /* bloqueado */ }
-  }
-
-  if (jaViu()) return;
-
-  function fechar() {
-    if (caixa.classList.contains("abertura--saindo")) return;   // dois cliques
-    marcarVista();
-    caixa.classList.add("abertura--saindo");
-    pagina.classList.remove("page--esperando");
-    document.body.style.overflow = "";
-    setTimeout(function () {
-      caixa.hidden = true;
-      try { video.pause(); video.removeAttribute("src"); video.load(); } catch (e) { /* nada */ }
-    }, 650);
-  }
-
-  pagina.classList.add("page--esperando");
-  caixa.hidden = false;
-  document.body.style.overflow = "hidden";
-
-  var aviso = document.getElementById("aberturaAviso");
-  var play = document.getElementById("aberturaPlay");
-
-  video.addEventListener("ended", fechar);
-  // Se o arquivo não carregar, ninguém fica preso numa tela parada.
-  video.addEventListener("error", fechar);
-
-  document.getElementById("aberturaPular").addEventListener("click", function (e) {
-    e.stopPropagation();
-    fechar();
-  });
-
-  // O toque da pessoa é o que libera o som: navegador nenhum barra vídeo
-  // que o próprio usuário mandou tocar.
-  function assistir() {
-    // Já está tocando mudo? Então o botão virou "ligar o som".
-    if (!video.paused && video.muted) {
-      video.muted = false;
-      play.hidden = true;
-      return;
-    }
-
-    aviso.textContent = "Carregando...";
-    video.muted = false;
-    video.play().then(function () {
-      aviso.textContent = "";
-      play.hidden = true;
-    }).catch(function () {
-      // Recusou com som: tenta mudo e deixa o botão para ligar o áudio.
-      video.muted = true;
-      video.play().then(function () {
-        aviso.textContent = "";
-        play.textContent = "Ativar o som";
-      }).catch(function () {
-        // Não deixou de jeito nenhum: mostra as fotos em vez de insistir.
-        fechar();
-      });
-    });
-  }
-  play.addEventListener("click", function (e) { e.stopPropagation(); assistir(); });
-  video.addEventListener("click", function () { if (video.paused) assistir(); });
-  video.addEventListener("playing", function () { aviso.textContent = ""; });
-
-  // Internet fraca no meio do vídeo: se o tempo parar de andar por uns 8
-  // segundos, a abertura sai em vez de deixar a tela travada.
-  var ultimo = 0, parado = 0;
-  var vigia = setInterval(function () {
-    if (caixa.hidden) { clearInterval(vigia); return; }
-    if (video.paused) { parado = 0; return; }          // ainda não começou: sem pressa
-    if (video.currentTime > ultimo + 0.1) { ultimo = video.currentTime; parado = 0; return; }
-    parado += 1;
-    if (parado >= 2) { clearInterval(vigia); fechar(); }
-  }, 4000);
-})();
-
 // ---------------------------------------------------------------- galeria
 (function () {
   "use strict";

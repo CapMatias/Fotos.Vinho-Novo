@@ -6,13 +6,8 @@ ficha de visitantes.
 
 Três telas:
 
-- **`/`** — abre com o vídeo da igreja (`site/abertura.mp4`, 55 s) em tela
-  cheia, sem som, com botão para ligar o áudio e outro para pular. Ao terminar
-  — ou ao pular — aparece a lista de álbuns: cada evento é um card com capa,
-  data e quantas fotos tem, e uma busca no topo acha pelo nome ou pela data.
-  O vídeo roda uma vez por visita: voltar de um álbum não faz assistir de novo.
-  Para trocar o vídeo, substitua `site/abertura.mp4`; para tirar a abertura,
-  apague o bloco `<div class="abertura">` do `site/index.html`.
+- **`/`** — a lista de álbuns. Cada evento é um card com capa, data e quantas
+  fotos tem, e uma busca no topo acha pelo nome ou pela data.
 - **`/album/NOME-DO-ALBUM`** — as fotos daquele evento. Toque em uma foto para
   ver grande (com setas e teclado) e na setinha para salvar no aparelho. O
   download é foto a foto, de propósito: quem quer três leva três, e o gasto de

@@ -269,22 +269,7 @@ textarea.campo__entrada { min-height: 76px; resize: vertical; }
 
 .escondido { display: none; }
 
-/* ------------------------- abertura em vídeo ------------------------- */
-.abertura {
-  position: fixed; inset: 0; z-index: 60; background: #000;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 1; transition: opacity .6s ease, transform .6s ease;
-}
-/* Saída: o vídeo se afasta e some enquanto a galeria sobe por baixo. */
-.abertura--saindo { opacity: 0; transform: scale(1.05); pointer-events: none; }
-.abertura__acoes { transition: opacity .25s ease; }
-.abertura--saindo .abertura__acoes { opacity: 0; }
-
-/* A galeria fica escondida embaixo enquanto o vídeo roda e entra junto com
-   o fim dele. Só ganha essa classe quando há vídeo para sair. */
-.page { transition: opacity .6s ease, transform .6s ease; }
-.page--esperando { opacity: 0; transform: translateY(16px); }
-
+/* Os cartões dos álbuns entram um depois do outro, bem de leve. */
 @keyframes surgir {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
@@ -292,32 +277,5 @@ textarea.campo__entrada { min-height: 76px; resize: vertical; }
 .albuns li { animation: surgir .5s ease both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .abertura, .page { transition-duration: .01ms; }
-  .abertura--saindo { transform: none; }
   .albuns li { animation: none; }
-}
-.abertura__video {
-  width: 100%; height: 100%; object-fit: contain; background: #000;
-}
-/* Os dois botões ficam em cantos opostos: o de pular no alto (onde a mão
-   alcança primeiro) e o de som embaixo à esquerda — longe do selo que a
-   hospedagem coloca no canto inferior direito. */
-.abertura__aviso {
-  position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
-  margin: 0; padding: 0 24px; text-align: center;
-  color: var(--wine-300); font-size: .95rem; pointer-events: none;
-}
-.abertura__acoes { position: absolute; inset: 0; pointer-events: none; }
-/* Botão de assistir: no meio da tela, grande, impossível de não ver. */
-.abertura__play {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  font-size: 1.05rem; padding: 16px 26px; border-radius: 999px;
-  box-shadow: 0 10px 30px -8px rgba(0,0,0,.6);
-}
-.abertura__acoes .botao { position: absolute; pointer-events: auto; }
-#aberturaPular {
-  top: max(12px, env(safe-area-inset-top)); right: 12px;
-}
-#aberturaSom {
-  left: 12px; bottom: max(16px, env(safe-area-inset-bottom));
 }
