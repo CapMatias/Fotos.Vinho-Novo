@@ -4,15 +4,15 @@
 
 [build]
   publish = "site"
-  functions = "netlify/functions"
+  functions = "funcoes"
 
 [build.environment]
   NODE_VERSION = "20"
 
-# Deixa os endereços curtos: /api/albuns em vez de /.netlify/functions/albuns
+# Deixa os endereços curtos: /api/albuns em vez de /.funcoes/albuns
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.funcoes/:splat"
   status = 200
 
 # Cada álbum tem endereço próprio: /album/batismo-2026

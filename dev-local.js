@@ -33,23 +33,26 @@ if (DE_MENTIRA) {
 if (!process.env.PAINEL_KEY) process.env.PAINEL_KEY = CHAVE_TESTE;
 
 const funcoes = {
-  "albuns": require("./netlify/functions/albuns"),
-  "album": require("./netlify/functions/album"),
-  "painel": require("./netlify/functions/painel"),
-  "painel-fotos": require("./netlify/functions/painel-fotos"),
-  "album-salvar": require("./netlify/functions/album-salvar"),
-  "album-apagar": require("./netlify/functions/album-apagar"),
-  "album-capa": require("./netlify/functions/album-capa"),
-  "upload-url": require("./netlify/functions/upload-url"),
-  "foto-registrar": require("./netlify/functions/foto-registrar"),
-  "foto-apagar": require("./netlify/functions/foto-apagar"),
-  "diagnostico": require("./netlify/functions/diagnostico"),
-  "visita": require("./netlify/functions/visita")
+  "albuns": require("./funcoes/albuns"),
+  "album": require("./funcoes/album"),
+  "painel": require("./funcoes/painel"),
+  "painel-fotos": require("./funcoes/painel-fotos"),
+  "album-salvar": require("./funcoes/album-salvar"),
+  "album-apagar": require("./funcoes/album-apagar"),
+  "album-capa": require("./funcoes/album-capa"),
+  "upload-url": require("./funcoes/upload-url"),
+  "foto-registrar": require("./funcoes/foto-registrar"),
+  "foto-apagar": require("./funcoes/foto-apagar"),
+  "diagnostico": require("./funcoes/diagnostico"),
+  "visita": require("./funcoes/visita"),
+  "chave-aviso": require("./funcoes/chave-aviso"),
+  "inscrever": require("./funcoes/inscrever"),
+  "avisar": require("./funcoes/avisar")
 };
 
 // ================= banco de mentira, só na memória =================
-const banco = { albuns: [], fotos: [] };
-const proximo = { albuns: 1, fotos: 1 };
+const banco = { albuns: [], fotos: [], inscricoes: [] };
+const proximo = { albuns: 1, fotos: 1, inscricoes: 1 };
 
 banco.albuns.push({
   id: proximo.albuns++,
@@ -111,6 +114,7 @@ function guardarArquivo(caminho, dados) {
 const TIPOS = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
+  ".js":  "text/javascript; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",

@@ -95,6 +95,7 @@
       <div class="barra" style="margin-top:0; padding-top:0; border-top:0;">
         <button class="botao botao--calmo" id="voltar" type="button">&#8592; Álbuns</button>
         <span class="barra__espaco"></span>
+        <button class="botao botao--ouro botao--miudo" id="avisarIgreja" type="button">Avisar a igreja</button>
         <button class="botao botao--calmo botao--miudo" id="editarAlbum" type="button">Editar</button>
         <button class="botao botao--perigo botao--miudo" id="apagarAlbum" type="button">Apagar álbum</button>
       </div>
@@ -396,6 +397,23 @@
 
   document.getElementById("editarAlbum").addEventListener("click", function () {
     abrirFormulario(aberto);
+  });
+
+  // Manda o aviso para quem pediu para ser avisado. É um botão, e não
+  // automático, porque quem publica é quem sabe a hora certa: com o álbum
+  // publicado e as fotos já dentro.
+  document.getElementById("avisarIgreja").addEventListener("click", function () {
+    var botao = document.getElementById("avisarIgreja");
+    if (!confirm("Avisar sobre o álbum " + aberto.titulo + " no celular de quem pediu?")) return;
+    botao.disabled = true;
+    pedir("avisar", { slug: aberto.slug }).then(function (dado) {
+      var r = dado.aviso || {};
+      avisar(recadoAlbum, r.enviados
+        ? "Aviso enviado para " + r.enviados + (r.enviados === 1 ? " aparelho." : " aparelhos.")
+        : "Ninguém pediu para receber avisos ainda.", r.enviados ? "ok" : "");
+    }).catch(function (e) {
+      avisar(recadoAlbum, "Não deu para avisar: " + e.message, "erro");
+    }).then(function () { botao.disabled = false; });
   });
 
   document.getElementById("apagarAlbum").addEventListener("click", function () {

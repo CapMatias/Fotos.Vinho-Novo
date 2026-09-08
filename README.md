@@ -23,7 +23,7 @@ Três telas:
 |---|---|
 | Telas | `site/index.html`, `site/album.html` e `site/painel.html` — HTML puro, sem framework |
 | Estilo | `site/estilo.css` — mesmas cores da ficha de visitantes |
-| Servidor | `netlify/functions/` — cria álbuns, assina os endereços e registra as fotos |
+| Servidor | `funcoes/` — cria álbuns, assina os endereços e registra as fotos |
 | Banco | Supabase (PostgreSQL), tabelas criadas por `supabase.sql` |
 | Fotos | Cloudinary, Cloudflare R2 ou Supabase Storage — escolhido pelas variáveis de ambiente |
 | Hospedagem | Vercel (`vercel.json` + `api/[rota].js`) ou Netlify (`netlify.toml`) — o mesmo código serve as duas |
@@ -56,7 +56,7 @@ O site roda em qualquer uma das duas hospedagens, sem mudar código:
 - **Netlify** — `netlify.toml` faz o mesmo papel. Cobra 15 créditos por
   publicação no plano grátis atual.
 
-As funções continuam em `netlify/functions/` (nome herdado da primeira
+As funções continuam em `funcoes/` (nome herdado da primeira
 hospedagem) e são as mesmas nos dois casos.
 
 Variáveis de ambiente exigidas (mesmos nomes nas duas):

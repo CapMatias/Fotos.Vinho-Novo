@@ -61,6 +61,11 @@
       <label class="campo__rotulo" for="busca">Procurar um álbum</label>
       <input id="busca" class="busca" type="search" placeholder="Batismo, Natal, retiro..." autocomplete="off">
 
+      <div class="barra escondido" id="avisoCaixa">
+        <button class="botao botao--calmo botao--miudo" id="avisoBotao" type="button"></button>
+        <span class="barra__conta" id="avisoTexto"></span>
+      </div>
+
       <p id="recado" class="aviso">Carregando os álbuns...</p>
       <ul id="lista" class="albuns"></ul>
     </div>
@@ -73,6 +78,107 @@
 </div>
 
 <script>
+// ----------------------------------------------------------------- avisos
+// Quem quiser é avisado no celular quando entrar álbum novo. No iPhone só
+// funciona depois de "Adicionar à Tela de Início"; no Android funciona no
+// navegador mesmo.
+(function () {
+  "use strict";
+
+  if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) return;
+
+  var caixa = document.getElementById("avisoCaixa");
+  var botao = document.getElementById("avisoBotao");
+  var texto = document.getElementById("avisoTexto");
+  var registro = null;
+  var chavePublica = "";
+
+  // A chave vem em base64url e o navegador quer bytes.
+  function paraBytes(base64url) {
+    var base64 = (base64url + "=".repeat((4 - base64url.length % 4) % 4))
+      .replace(/-/g, "+").replace(/_/g, "/");
+    var cru = atob(base64);
+    var bytes = new Uint8Array(cru.length);
+    for (var i = 0; i < cru.length; i++) bytes[i] = cru.charCodeAt(i);
+    return bytes;
+  }
+
+  function mostrar(modo, recado) {
+    caixa.classList.remove("escondido");
+    botao.textContent = modo === "sair" ? "Desligar os avisos" : "Receber aviso de álbum novo";
+    botao.disabled = false;
+    texto.textContent = recado || "";
+    botao.onclick = modo === "sair" ? desligar : ligar;
+  }
+
+  function contar(inscricao, sair) {
+    var dados = sair
+      ? { endpoint: inscricao.endpoint, sair: true }
+      : (function () {
+          var j = inscricao.toJSON();
+          return { endpoint: inscricao.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth };
+        })();
+    return fetch("/api/inscrever", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados)
+    });
+  }
+
+  function ligar() {
+    botao.disabled = true;
+    texto.textContent = "Pedindo permissão...";
+    Notification.requestPermission().then(function (permissao) {
+      if (permissao !== "granted") {
+        mostrar("entrar", permissao === "denied"
+          ? "Você bloqueou os avisos nas configurações do navegador."
+          : "Sem problema — você pode ligar depois.");
+        return;
+      }
+      return registro.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: paraBytes(chavePublica)
+      }).then(function (inscricao) {
+        return contar(inscricao, false).then(function () {
+          mostrar("sair", "Pronto! Você será avisado quando entrar álbum novo.");
+        });
+      });
+    }).catch(function () {
+      mostrar("entrar", "Não consegui ligar os avisos neste aparelho.");
+    });
+  }
+
+  function desligar() {
+    botao.disabled = true;
+    registro.pushManager.getSubscription().then(function (inscricao) {
+      if (!inscricao) { mostrar("entrar", ""); return; }
+      return contar(inscricao, true)
+        .then(function () { return inscricao.unsubscribe(); })
+        .then(function () { mostrar("entrar", "Avisos desligados."); });
+    }).catch(function () { mostrar("sair", "Não consegui desligar agora."); });
+  }
+
+  navigator.serviceWorker.register("/sw.js").then(function (reg) {
+    registro = reg;
+    return fetch("/api/chave-aviso").then(function (r) { return r.json(); });
+  }).then(function (dado) {
+    if (!dado || !dado.ligado) return;          // avisos não configurados
+    chavePublica = dado.chave;
+    return registro.pushManager.getSubscription().then(function (inscricao) {
+      if (inscricao) {
+        mostrar("sair", "");
+      } else if (Notification.permission === "denied") {
+        // Já bloqueou antes: explica em vez de sumir sem dizer nada.
+        caixa.classList.remove("escondido");
+        botao.classList.add("escondido");
+        texto.textContent = "Os avisos estão bloqueados para este site nas configurações do navegador.";
+      } else {
+        mostrar("entrar", "");
+      }
+    });
+  }).catch(function () { /* sem avisos: a galeria funciona igual */ });
+})();
+
 // ---------------------------------------------------------------- galeria
 (function () {
   "use strict";

@@ -68,3 +68,18 @@ language sql
 as $$
   update public.albuns set visitas = visitas + 1 where slug = p_slug;
 $$;
+
+-- ---------------------------------------------------------------------
+-- 6. Quem pediu para receber aviso de álbum novo.
+--    Guarda só o endereço que o navegador gera e as chaves de criptografia
+--    daquele aparelho. Nenhum dado pessoal: não há nome, e-mail nem telefone.
+-- ---------------------------------------------------------------------
+create table if not exists public.inscricoes (
+  id        bigint generated always as identity primary key,
+  endpoint  text        not null unique,
+  p256dh    text        not null,
+  auth      text        not null,
+  criado_em timestamptz not null default now()
+);
+
+alter table public.inscricoes enable row level security;

@@ -1,24 +1,27 @@
 // Ponte entre a Vercel e as funções do site.
 //
-// As funções em netlify/functions/ falam o formato "evento -> resposta".
+// As funções em funcoes/ falam o formato "evento -> resposta".
 // A Vercel fala "req, res". Este arquivo traduz um no outro, para o código
 // que já está testado continuar valendo em qualquer uma das duas hospedagens.
 //
 // O nome do arquivo entre colchetes faz a Vercel mandar para cá tudo que
 // chegar em /api/qualquer-coisa, e o pedaço final vem em req.query.rota.
 const rotas = {
-  "albuns":         require("../netlify/functions/albuns"),
-  "album":          require("../netlify/functions/album"),
-  "visita":         require("../netlify/functions/visita"),
-  "painel":         require("../netlify/functions/painel"),
-  "painel-fotos":   require("../netlify/functions/painel-fotos"),
-  "album-salvar":   require("../netlify/functions/album-salvar"),
-  "album-apagar":   require("../netlify/functions/album-apagar"),
-  "album-capa":     require("../netlify/functions/album-capa"),
-  "upload-url":     require("../netlify/functions/upload-url"),
-  "foto-registrar": require("../netlify/functions/foto-registrar"),
-  "foto-apagar":    require("../netlify/functions/foto-apagar"),
-  "diagnostico":    require("../netlify/functions/diagnostico")
+  "albuns":         require("../funcoes/albuns"),
+  "album":          require("../funcoes/album"),
+  "visita":         require("../funcoes/visita"),
+  "painel":         require("../funcoes/painel"),
+  "painel-fotos":   require("../funcoes/painel-fotos"),
+  "album-salvar":   require("../funcoes/album-salvar"),
+  "album-apagar":   require("../funcoes/album-apagar"),
+  "album-capa":     require("../funcoes/album-capa"),
+  "upload-url":     require("../funcoes/upload-url"),
+  "foto-registrar": require("../funcoes/foto-registrar"),
+  "foto-apagar":    require("../funcoes/foto-apagar"),
+  "diagnostico":    require("../funcoes/diagnostico"),
+  "chave-aviso":    require("../funcoes/chave-aviso"),
+  "inscrever":      require("../funcoes/inscrever"),
+  "avisar":         require("../funcoes/avisar")
 };
 
 module.exports = async (req, res) => {
