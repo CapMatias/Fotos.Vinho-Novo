@@ -77,8 +77,8 @@
           <textarea class="campo__entrada" id="descricao" maxlength="400" placeholder="Fotos do batismo da manhã"></textarea>
         </label>
         <label class="campo--linha">
-          <input type="checkbox" id="publicado" checked>
-          <span>Já aparece para todo mundo no site</span>
+          <input type="checkbox" id="publicado">
+          <span>Deixar público já (desmarcado, o álbum nasce privado para você subir as fotos com calma)</span>
         </label>
         <div class="barra">
           <button class="botao" id="salvarAlbum" type="submit">Salvar álbum</button>
@@ -103,6 +103,12 @@
       <h2 id="albumTitulo" style="margin:14px 0 2px; letter-spacing:-.01em;"></h2>
       <p id="albumMeta" class="album__meta"></p>
       <p id="albumLink" class="album__meta"></p>
+
+      <!-- Privado: só quem tem o painel vê. Público: aparece no site. -->
+      <div class="estado" id="estadoAlbum">
+        <span class="estado__selo" id="estadoSelo"></span>
+        <button class="botao botao--miudo" id="alternarVisibilidade" type="button"></button>
+      </div>
 
       <div class="solta" id="solta">
         <span class="solta__forte">Toque aqui para escolher as fotos</span>
@@ -259,7 +265,7 @@
       if (!a.publicado) {
         var oculto = document.createElement("span");
         oculto.className = "album__oculto";
-        oculto.textContent = "oculto — ninguém vê ainda";
+        oculto.textContent = "🔒 privado — só você vê";
         corpo.appendChild(oculto);
       }
 
@@ -275,7 +281,7 @@
     document.getElementById("titulo").value = album ? album.titulo : "";
     document.getElementById("data").value = album ? album.data_evento : new Date().toISOString().slice(0, 10);
     document.getElementById("descricao").value = album ? album.descricao : "";
-    document.getElementById("publicado").checked = album ? album.publicado : true;
+    document.getElementById("publicado").checked = album ? album.publicado : false;
     formAlbum.classList.remove("escondido");
     telaAlbuns.classList.remove("escondido");
     telaAlbum.classList.add("escondido");
@@ -311,9 +317,12 @@
   });
 
   // ================================================== álbum aberto
+  var fotosNoAberto = 0;   // quantas fotos tem o álbum aberto
+
   function abrirAlbum(slug) {
     return pedir("painel-fotos", { slug: slug }).then(function (dado) {
       aberto = dado.album;
+      fotosNoAberto = dado.fotos.length;
       telaAlbuns.classList.add("escondido");
       telaAlbum.classList.remove("escondido");
       formAlbum.classList.add("escondido");
@@ -322,8 +331,8 @@
       document.getElementById("albumTitulo").textContent = aberto.titulo;
       document.getElementById("albumMeta").textContent =
         porExtenso(aberto.data_evento) + " • " + dado.fotos.length +
-        (dado.fotos.length === 1 ? " foto" : " fotos") +
-        (aberto.publicado ? "" : " • oculto do site");
+        (dado.fotos.length === 1 ? " foto" : " fotos");
+      mostrarEstado();
       document.getElementById("albumLink").textContent =
         "Link para a igreja: " + location.origin + "/album/" + aberto.slug;
 
@@ -399,12 +408,31 @@
     abrirFormulario(aberto);
   });
 
-  // Manda o aviso para quem pediu para ser avisado. É um botão, e não
-  // automático, porque quem publica é quem sabe a hora certa: com o álbum
-  // publicado e as fotos já dentro.
-  document.getElementById("avisarIgreja").addEventListener("click", function () {
+  // ------------------------------------------- público / privado
+  // Privado: o álbum some do site e do link direto; só o painel vê.
+  // O jeito de trabalhar é: criar privado, subir tudo, abrir e avisar.
+  function mostrarEstado() {
+    var caixa = document.getElementById("estadoAlbum");
+    var selo = document.getElementById("estadoSelo");
+    var botao = document.getElementById("alternarVisibilidade");
+    var publico = !!aberto.publicado;
+
+    caixa.className = "estado " + (publico ? "estado--publico" : "estado--privado");
+    selo.textContent = publico
+      ? "🌐 Público — aparece no site para todo mundo"
+      : "🔒 Privado — só você vê. Suba as fotos com calma.";
+    botao.textContent = publico ? "Tornar privado" : "Tornar público";
+    botao.className = "botao botao--miudo " + (publico ? "botao--calmo" : "botao--ouro");
+
+    // Não dá para avisar a igreja sobre um álbum que ninguém consegue abrir.
+    var avisarBotao = document.getElementById("avisarIgreja");
+    avisarBotao.disabled = !publico;
+    avisarBotao.title = publico ? "" : "Torne o álbum público antes de avisar";
+  }
+
+  function avisarAgora(jaConfirmado) {
     var botao = document.getElementById("avisarIgreja");
-    if (!confirm("Avisar sobre o álbum " + aberto.titulo + " no celular de quem pediu?")) return;
+    if (!jaConfirmado && !confirm("Avisar sobre o álbum " + aberto.titulo + " no celular de quem pediu?")) return;
     botao.disabled = true;
     pedir("avisar", { slug: aberto.slug }).then(function (dado) {
       var r = dado.aviso || {};
@@ -413,6 +441,43 @@
         : "Ninguém pediu para receber avisos ainda.", r.enviados ? "ok" : "");
     }).catch(function (e) {
       avisar(recadoAlbum, "Não deu para avisar: " + e.message, "erro");
+    }).then(function () { mostrarEstado(); });
+  }
+
+  // O aviso é um botão, e não automático: quem publica sabe a hora certa.
+  document.getElementById("avisarIgreja").addEventListener("click", function () {
+    avisarAgora(false);
+  });
+
+  document.getElementById("alternarVisibilidade").addEventListener("click", function () {
+    var botao = document.getElementById("alternarVisibilidade");
+    var abrir = !aberto.publicado;
+
+    if (!abrir && !confirm("Tornar o álbum privado? Ele some do site até você abrir de novo.")) return;
+    if (abrir && fotosNoAberto === 0 &&
+        !confirm("O álbum ainda não tem fotos. Tornar público mesmo assim?")) return;
+
+    botao.disabled = true;
+    pedir("album-salvar", {
+      id: aberto.id,
+      titulo: aberto.titulo,
+      data_evento: aberto.data_evento,
+      descricao: aberto.descricao,
+      publicado: abrir
+    }).then(function () {
+      aberto.publicado = abrir;
+      mostrarEstado();
+
+      if (!abrir) {
+        avisar(recadoAlbum, "Álbum privado: saiu do site.", "ok");
+      } else if (fotosNoAberto > 0 &&
+                 confirm("Álbum público! Avisar a igreja agora que as fotos chegaram?")) {
+        avisarAgora(true);
+      } else {
+        avisar(recadoAlbum, "Álbum público: já aparece no site.", "ok");
+      }
+    }).catch(function (e) {
+      avisar(recadoAlbum, "Não deu para mudar: " + e.message, "erro");
     }).then(function () { botao.disabled = false; });
   });
 

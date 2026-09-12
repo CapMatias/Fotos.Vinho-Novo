@@ -153,6 +153,16 @@ img { max-width: 100%; }
   background: var(--line); color: var(--ink-soft); font-size: .74rem; font-weight: 700;
 }
 
+/* Caixa de público/privado no álbum aberto do painel */
+.estado {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 12px; padding: 10px 12px; border-radius: 12px;
+  border: 1px solid var(--line-2); background: var(--surface-2);
+}
+.estado__selo { flex: 1 1 auto; font-weight: 700; font-size: .92rem; color: var(--ink-soft); }
+.estado--publico { border-color: var(--ok); }
+.estado--publico .estado__selo { color: var(--ok); }
+
 /* grade de fotos */
 .fotos {
   list-style: none; margin: 16px 0 0; padding: 0;

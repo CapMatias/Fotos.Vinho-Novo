@@ -3,3 +3,4 @@ node_modules/
 .dev-fotos/
 .env
 .claude-flow/
+chaves-aviso.txt
