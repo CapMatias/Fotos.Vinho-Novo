@@ -51,6 +51,7 @@
     <a class="hero__voltar" href="/">&#8592; Todos os álbuns</a>
     <h1 class="hero__titulo" id="titulo">Carregando...</h1>
     <p class="hero__sub" id="subtitulo"></p>
+    <button class="botao botao--ouro botao--miudo hero__compartilhar" id="compartilhar" type="button" hidden>Compartilhar álbum</button>
   </header>
 
   <main class="conteudo">
@@ -84,6 +85,7 @@
   </div>
 </div>
 
+<script src="/compartilhar.js"></script>
 <script>
 (function () {
   "use strict";
@@ -232,6 +234,12 @@
       titulo.textContent = album.titulo;
       subtitulo.textContent = porExtenso(album.data_evento) + (album.descricao ? " • " + album.descricao : "");
       contarUmaVez(album.slug);
+
+      var compartilhar = document.getElementById("compartilhar");
+      compartilhar.hidden = false;
+      compartilhar.addEventListener("click", function () {
+        compartilharLink(album.titulo, location.origin + "/album/" + album.slug, compartilhar);
+      });
 
       if (!fotos.length) {
         mostrarRecado("Este álbum ainda não tem fotos.", "");

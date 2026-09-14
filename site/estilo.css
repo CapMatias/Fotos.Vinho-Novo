@@ -108,6 +108,7 @@ img { max-width: 100%; }
   color: var(--wine-300); text-decoration: none; font-size: .9rem; font-weight: 600;
 }
 .hero__voltar:hover { color: var(--gold-soft); }
+.hero__compartilhar { position: relative; margin-top: 14px; }
 
 /* --------------------------- cartões --------------------------- */
 .painel-branco {

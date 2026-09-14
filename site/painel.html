@@ -103,6 +103,7 @@
       <h2 id="albumTitulo" style="margin:14px 0 2px; letter-spacing:-.01em;"></h2>
       <p id="albumMeta" class="album__meta"></p>
       <p id="albumLink" class="album__meta"></p>
+      <button class="botao botao--calmo botao--miudo" id="compartilharAlbum" type="button">Compartilhar link</button>
 
       <!-- Privado: só quem tem o painel vê. Público: aparece no site. -->
       <div class="estado" id="estadoAlbum">
@@ -137,6 +138,7 @@
   </footer>
 </div>
 
+<script src="/compartilhar.js"></script>
 <script>
 (function () {
   "use strict";
@@ -319,6 +321,16 @@
   // ================================================== álbum aberto
   var fotosNoAberto = 0;   // quantas fotos tem o álbum aberto
 
+  // O link sai sempre com o endereço da Vercel, mesmo que o painel tenha sido
+  // aberto por outro endereço (ex.: um atalho antigo da Netlify).
+  var SITE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+    ? location.origin
+    : "https://fotos-vinho-novo.vercel.app";
+
+  function linkDoAlbum(slug) {
+    return SITE + "/album/" + slug;
+  }
+
   function abrirAlbum(slug) {
     return pedir("painel-fotos", { slug: slug }).then(function (dado) {
       aberto = dado.album;
@@ -334,7 +346,7 @@
         (dado.fotos.length === 1 ? " foto" : " fotos");
       mostrarEstado();
       document.getElementById("albumLink").textContent =
-        "Link para a igreja: " + location.origin + "/album/" + aberto.slug;
+        "Link para a igreja: " + linkDoAlbum(aberto.slug);
 
       desenharFotos(dado.fotos);
       avisar(recadoAlbum, "", "");
@@ -428,7 +440,16 @@
     var avisarBotao = document.getElementById("avisarIgreja");
     avisarBotao.disabled = !publico;
     avisarBotao.title = publico ? "" : "Torne o álbum público antes de avisar";
+
+    // Link de álbum privado abre "não encontrado" para quem recebe.
+    var compartilharBotao = document.getElementById("compartilharAlbum");
+    compartilharBotao.disabled = !publico;
+    compartilharBotao.title = publico ? "" : "Torne o álbum público antes de compartilhar";
   }
+
+  document.getElementById("compartilharAlbum").addEventListener("click", function () {
+    compartilharLink(aberto.titulo, linkDoAlbum(aberto.slug), this);
+  });
 
   function avisarAgora(jaConfirmado) {
     var botao = document.getElementById("avisarIgreja");
