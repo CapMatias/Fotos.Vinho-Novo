@@ -61,6 +61,7 @@
         <button class="botao botao--ouro" id="novoAlbum" type="button">+ Novo álbum</button>
         <span class="barra__espaco"></span>
         <span class="barra__conta" id="ondeGuarda"></span>
+        <span class="barra__conta" id="usoApp"></span>
       </div>
 
       <form class="escondido" id="formAlbum">
@@ -205,6 +206,7 @@
     return pedir("painel").then(function (dado) {
       albuns = dado.albuns || [];
       document.getElementById("ondeGuarda").textContent = "Fotos guardadas em: " + (dado.guardadas_em || "");
+      mostrarUsoDoApp(dado.aparelhos);
       desenharAlbuns();
     }).catch(function (e) {
       avisar(recado, e.message === "Chave inválida."
@@ -329,6 +331,20 @@
 
   function linkDoAlbum(slug) {
     return SITE + "/album/" + slug;
+  }
+
+  // Quantos aparelhos abriram o site pelo ícone da tela de início.
+  // Vem vazio se a tabela "aparelhos" ainda não foi criada no Supabase.
+  function mostrarUsoDoApp(uso) {
+    var linha = document.getElementById("usoApp");
+    if (!uso) { linha.hidden = true; return; }
+    var app = uso.total
+      ? "📱 " + uso.total + (uso.total === 1 ? " aparelho" : " aparelhos") + " com o app na tela de início" +
+        " (" + uso.ativos + " abriram nos últimos 30 dias)"
+      : "📱 Ninguém abriu pelo app da tela de início ainda";
+    var avisos = "🔔 " + uso.avisos + (uso.avisos === 1 ? " recebe" : " recebem") + " aviso de álbum novo";
+    linha.textContent = app + " • " + avisos;
+    linha.hidden = false;
   }
 
   function abrirAlbum(slug) {

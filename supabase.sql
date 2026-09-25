@@ -83,3 +83,20 @@ create table if not exists public.inscricoes (
 );
 
 alter table public.inscricoes enable row level security;
+
+-- ---------------------------------------------------------------------
+-- 7. Quantos aparelhos têm o site na tela de início ("aplicativo").
+--    Nem o iPhone nem o Android avisam quando alguém adiciona o site à
+--    tela de início. O que dá para contar é quando o site abre em modo
+--    aplicativo: a página manda uma marca sorteada, uma vez por dia.
+--    Sem nome, e-mail ou telefone: a marca é só um número aleatório.
+-- ---------------------------------------------------------------------
+create table if not exists public.aparelhos (
+  id        bigint generated always as identity primary key,
+  marca     text        not null unique,   -- número sorteado pelo aparelho
+  sistema   text,                          -- ios, android ou outro
+  criado_em timestamptz not null default now(),
+  visto_em  timestamptz not null default now()
+);
+
+alter table public.aparelhos enable row level security;

@@ -45,14 +45,15 @@ const funcoes = {
   "foto-apagar": require("./funcoes/foto-apagar"),
   "diagnostico": require("./funcoes/diagnostico"),
   "visita": require("./funcoes/visita"),
+  "aparelho": require("./funcoes/aparelho"),
   "chave-aviso": require("./funcoes/chave-aviso"),
   "inscrever": require("./funcoes/inscrever"),
   "avisar": require("./funcoes/avisar")
 };
 
 // ================= banco de mentira, só na memória =================
-const banco = { albuns: [], fotos: [], inscricoes: [] };
-const proximo = { albuns: 1, fotos: 1, inscricoes: 1 };
+const banco = { albuns: [], fotos: [], inscricoes: [], aparelhos: [] };
+const proximo = { albuns: 1, fotos: 1, inscricoes: 1, aparelhos: 1 };
 
 banco.albuns.push({
   id: proximo.albuns++,
@@ -148,7 +149,20 @@ const servidor = http.createServer(async function (req, res) {
   const tabela = rota.replace("/faz-de-conta/rest/v1/", "");
   if (rota.indexOf("/faz-de-conta/rest/v1/") === 0 && banco[tabela]) {
     if (req.method === "POST") {
-      const novo = JSON.parse((await corpoDe(req)).toString());
+      const enviado = JSON.parse((await corpoDe(req)).toString());
+      const novo = Array.isArray(enviado) ? enviado[0] : enviado;
+
+      // imita o upsert do Supabase (?on_conflict=coluna)
+      const coluna = url.searchParams.get("on_conflict");
+      if (coluna) {
+        const igual = banco[tabela].filter(function (l) { return l[coluna] === novo[coluna]; })[0];
+        if (igual) {
+          Object.assign(igual, novo);
+          res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify([igual]));
+          return;
+        }
+      }
+
       novo.id = proximo[tabela]++;
       novo.criado_em = new Date().toISOString();
       banco[tabela].push(novo);

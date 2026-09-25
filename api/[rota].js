@@ -10,6 +10,7 @@ const rotas = {
   "albuns":         require("../funcoes/albuns"),
   "album":          require("../funcoes/album"),
   "visita":         require("../funcoes/visita"),
+  "aparelho":       require("../funcoes/aparelho"),
   "painel":         require("../funcoes/painel"),
   "painel-fotos":   require("../funcoes/painel-fotos"),
   "album-salvar":   require("../funcoes/album-salvar"),

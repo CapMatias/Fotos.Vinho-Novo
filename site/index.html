@@ -286,5 +286,45 @@
     });
 })();
 </script>
+
+<script>
+// ------------------------------------------------- contagem do aplicativo
+// Quando o site abre pelo ícone da tela de início, avisa o painel que este
+// aparelho tem o "aplicativo". Uma vez por dia no máximo, com uma marca
+// sorteada aqui mesmo — sem nome, e-mail ou telefone.
+(function () {
+  "use strict";
+
+  var comoApp = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+                window.navigator.standalone === true;
+  if (!comoApp) return;
+
+  var hoje = new Date().toISOString().slice(0, 10);
+  var marca;
+  try {
+    if (localStorage.getItem("aparelho-visto") === hoje) return;
+    marca = localStorage.getItem("aparelho-marca");
+    if (!marca) {
+      marca = (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      localStorage.setItem("aparelho-marca", marca);
+    }
+  } catch (e) {
+    return;   // sem memória no aparelho, cada abertura contaria como nova
+  }
+
+  var ua = navigator.userAgent || "";
+  var sistema = /iphone|ipad|ipod/i.test(ua) ? "ios" : /android/i.test(ua) ? "android" : "outro";
+
+  fetch("/api/aparelho", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ marca: marca, sistema: sistema })
+  }).then(function (r) {
+    if (r.ok) { try { localStorage.setItem("aparelho-visto", hoje); } catch (e) { /* tanto faz */ } }
+  }).catch(function () { /* contagem é enfeite */ });
+})();
+</script>
 </body>
 </html>
