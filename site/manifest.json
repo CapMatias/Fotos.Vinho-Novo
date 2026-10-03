@@ -2,6 +2,7 @@
   "name": "Fotos — Vinho Novo Saquarema",
   "short_name": "Vinho Novo",
   "description": "Fotos dos cultos e eventos da Igreja Evangélica Vinho Novo em Saquarema.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
